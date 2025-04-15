@@ -1,49 +1,30 @@
-# Linguagem
+PROGRAM         = { STATEMENT } ;
 
-PROGRAM     = { STATEMENT } ;
+STATEMENT       = ( VAR_DECL | ASSIGNMENT | IF_STATEMENT | LOOP_STATEMENT | PRINT_STATEMENT ), "fim" ;
 
-STATEMENT   = ( VAR_DECL | ASSIGNMENT | PRINT | IF | WHILE ), ";" ;
+VAR_DECL        = "guardar", IDENTIFIER, "como", TYPE, "=", EXPRESSION ;
+ASSIGNMENT      = "mudar", IDENTIFIER, "para", EXPRESSION ;
 
-VAR_DECL    = "let", IDENTIFIER, ":", TYPE, "=", EXPRESSION ;
+TYPE            = "número" | "texto" | "lógico" ;
 
-ASSIGNMENT  = IDENTIFIER, "=", EXPRESSION ;
+IF_STATEMENT    = "se", LOGIC_EXPR, "então", { STATEMENT }, [ "senão", { STATEMENT } ] ;
 
-PRINT       = "print", "(", EXPRESSION, ")" ;
+LOOP_STATEMENT  = "repita", "enquanto", LOGIC_EXPR, "faça", { STATEMENT } ;
 
-IF          = "if", "(", EXPRESSION, ")", BLOCK, [ "else", BLOCK ] ;
+PRINT_STATEMENT = "mostrar", EXPRESSION ;
 
-WHILE       = "while", "(", EXPRESSION, ")", BLOCK ;
+EXPRESSION      = TERM, { ("mais" | "menos"), TERM } ;
+TERM            = FACTOR, { ("vezes" | "dividido"), FACTOR } ;
+FACTOR          = "(", EXPRESSION, ")" | IDENTIFIER | NUMBER | STRING | BOOLEAN ;
 
-BLOCK       = "{", { STATEMENT }, "}" ;
+LOGIC_EXPR      = EXPRESSION, LOGIC_OPERATOR, EXPRESSION ;
+LOGIC_OPERATOR  = "igual" | "maior" | "menor" | "e" | "ou" | "não" ;
 
-EXPRESSION  = LOGIC_EXPR ;
+IDENTIFIER      = LETTER, { LETTER | DIGIT | "_" } ;
+NUMBER          = DIGIT, { DIGIT } ;
+STRING          = "\"", { ANY_CHAR }, "\"" ;
+BOOLEAN         = "verdadeiro" | "falso" ;
 
-LOGIC_EXPR  = COMP_EXPR, { ("&&" | "||"), COMP_EXPR } ;
-
-COMP_EXPR   = CONCAT_EXPR, { ("==" | "!=" | "<" | ">" | "<=" | ">="), CONCAT_EXPR } ;
-
-CONCAT_EXPR = TERM, { "++", TERM } ;
-
-TERM        = FACTOR, { ("+" | "-"), FACTOR } ;
-
-FACTOR      = UNARY, { ("*" | "/"), UNARY } ;
-
-UNARY       = ( ("-" | "!"), UNARY ) | PRIMARY ;
-
-PRIMARY     = NUMBER | BOOLEAN | STRING | IDENTIFIER | "(", EXPRESSION, ")" ;
-
-TYPE        = "i32" | "bool" | "str" ;
-
-BOOLEAN     = "true" | "false" ;
-
-STRING      = '"', { CHAR }, '"' ;
-
-IDENTIFIER  = LETTER, { LETTER | DIGIT | "_" } ;
-
-NUMBER      = DIGIT, { DIGIT } ;
-
-CHAR        = any printable character except '"' ;
-
-LETTER      = ( a | ... | z | A | ... | Z ) ;
-
-DIGIT       = ( 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 ) ;
+LETTER          = "a" | ... | "z" | "A" | ... | "Z" ;
+DIGIT           = "0" | ... | "9" ;
+ANY_CHAR        = qualquer caractere imprimível ;
