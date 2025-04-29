@@ -1,4 +1,4 @@
-# Linguagem de Pesca: 🐟
+# Linguagem de Pesca 🐟
 
 ## Tipos de Valores
 - `salmao`: verdadeiro
@@ -8,7 +8,7 @@
 ## Sintaxe em EBNF
 ```ebnf
 PROGRAM     = { STATEMENT } ;
-STATEMENT   = ( ASSIGNMENT | PRINT | IF | WHILE ) "," ;
+STATEMENT   = ( ASSIGNMENT | PRINT | IF | WHILE ) ";" ;
 
 ASSIGNMENT  = IDENTIFIER , "=" , EXPRESSION ;
 PRINT       = "fale" , "(" , EXPRESSION , ")" ;
@@ -16,17 +16,20 @@ IF          = "se" , "(" , EXPRESSION , ")" , BLOCK , [ "senão" , BLOCK ] ;
 WHILE       = "enquanto" , "(" , EXPRESSION , ")" , BLOCK ;
 BLOCK       = "{" , { STATEMENT } , "}" ;
 
-EXPRESSION  = TERM , { ("+" | "-" | "++") , TERM } ;
-TERM        = FACTOR , { ("*" | "/") , FACTOR } ;
-FACTOR      = (["+" | "-"] , FACTOR)
+EXPRESSION  = RELATION , { ("++") , RELATION } ;
+RELATION    = TERM , [ ("==" | "!=" | ">" | "<" | ">=" | "<=") , TERM ] ;
+TERM        = FACTOR , { ("+" | "-") , FACTOR } ;
+FACTOR      = PRIMARY , { ("*" | "/") , PRIMARY } ;
+PRIMARY     = ( ["+" | "-"] , PRIMARY )
             | NUMBER
             | STRING
             | BOOL
-            | LIST
+            | LIST_EXPR
             | IDENTIFIER
             | "(" , EXPRESSION , ")" ;
 
-LIST        = "rede" , "[" , [ EXPRESSION , { "," , EXPRESSION } ] , "]" ;
+LIST_EXPR   = "rede" , "[" , LIST_ITEMS , "]" ;
+LIST_ITEMS  = [ EXPRESSION , { "," , EXPRESSION } ] ;
 
 IDENTIFIER  = LETTER , { LETTER | DIGIT | "_" } ;
 NUMBER      = DIGIT , { DIGIT } ;
@@ -42,7 +45,7 @@ CHAR        = qualquer caractere visível exceto aspas ;
 ```pesca
 peixe = 10;
 agua_limpa = salmao;
-rede = [1, 2, 3];
+minha_lista = rede[1, 2, 3];
 
 se (peixe > 5) {
     fale("Peguei um grande!");

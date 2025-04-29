@@ -68,11 +68,21 @@ extern int yydebug;
     TMINUS = 269,                  /* TMINUS  */
     TMULT = 270,                   /* TMULT  */
     TDIV = 271,                    /* TDIV  */
-    TLPAREN = 272,                 /* TLPAREN  */
-    TRPAREN = 273,                 /* TRPAREN  */
-    TLBRACE = 274,                 /* TLBRACE  */
-    TRBRACE = 275,                 /* TRBRACE  */
-    TSEMI = 276                    /* TSEMI  */
+    TEQ = 272,                     /* TEQ  */
+    TNEQ = 273,                    /* TNEQ  */
+    TGT = 274,                     /* TGT  */
+    TLT = 275,                     /* TLT  */
+    TGTE = 276,                    /* TGTE  */
+    TLTE = 277,                    /* TLTE  */
+    TLPAREN = 278,                 /* TLPAREN  */
+    TRPAREN = 279,                 /* TRPAREN  */
+    TLBRACE = 280,                 /* TLBRACE  */
+    TRBRACE = 281,                 /* TRBRACE  */
+    TCOMMA = 282,                  /* TCOMMA  */
+    TSEMICOLON = 283,              /* TSEMICOLON  */
+    TLBRACKET = 284,               /* TLBRACKET  */
+    TRBRACKET = 285,               /* TRBRACKET  */
+    TREDE = 286                    /* TREDE  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -81,13 +91,14 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 10 "parser.y"
+#line 12 "parser.y"
 
     int ival;
     int boolean;
     char* str;
+    void* list;  /* Para suportar o tipo 'rede' (lista) */
 
-#line 91 "parser.tab.h"
+#line 102 "parser.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;
