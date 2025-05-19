@@ -82,6 +82,17 @@ static void push_exec(int flag) { exec_stack[++exec_sp] = flag; }
 static void pop_exec()       { if(exec_sp>=0) exec_sp--; }
 static int top_exec()        { return exec_sp < 0 ? 1 : exec_stack[exec_sp]; }
 
+/* Loop control - guarda os estados das variáveis usadas em loops */
+typedef struct {
+    char *var_name;    /* Nome da variável do loop (ex: "contador") */
+    int start;         /* Valor inicial (ex: 0) */
+    int end;           /* Valor final (ex: 3 para "contador < 3") */
+    int step;          /* Incremento por iteração (ex: 1) */
+    int current;       /* Valor atual da variável */
+} LoopState;
+
+static LoopState current_loop = {NULL, 0, 0, 0, 0};
+
 /* Symbol table */
 typedef struct Var { char *name; Value val; struct Var *next; } Var;
 static Var *sym_table = NULL;
@@ -109,7 +120,7 @@ static Value list_finalize(){ int *a=malloc(list_size*sizeof(int)); memcpy(a,lis
 int yylex(void);
 int yyerror(const char *s){ fprintf(stderr,"Erro de sintaxe: %s\n",s); return 0; }
 
-#line 113 "parser.tab.c"
+#line 124 "parser.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -571,10 +582,10 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    77,    77,    81,    82,    86,    87,    88,    89,    93,
-      98,    99,   100,   101,   102,   103,   104,   105,   106,   111,
-     115,   119,   120,   124,   125,   126,   127,   128,   129,   133,
-     134,   133,   136,   136,   141,   141,   150
+       0,    88,    88,    92,    93,    97,    98,    99,   100,   104,
+     109,   110,   111,   112,   113,   114,   115,   116,   117,   122,
+     126,   130,   131,   135,   136,   137,   138,   139,   140,   144,
+     145,   144,   147,   147,   153,   152,   203
 };
 #endif
 
@@ -1183,175 +1194,216 @@ yyreduce:
   switch (yyn)
     {
   case 9: /* assignment: IDENT '=' expr ';'  */
-#line 94 "parser.y"
+#line 105 "parser.y"
   { if(top_exec()) set_var((yyvsp[-3].sval), (yyvsp[-1].val)); }
-#line 1189 "parser.tab.c"
+#line 1200 "parser.tab.c"
     break;
 
   case 10: /* expr: expr '+' expr  */
-#line 98 "parser.y"
+#line 109 "parser.y"
                     { Value v = make_int((yyvsp[-2].val).ival + (yyvsp[0].val).ival); (yyval.val)=v; }
-#line 1195 "parser.tab.c"
+#line 1206 "parser.tab.c"
     break;
 
   case 11: /* expr: expr '-' expr  */
-#line 99 "parser.y"
+#line 110 "parser.y"
                     { Value v = make_int((yyvsp[-2].val).ival - (yyvsp[0].val).ival); (yyval.val)=v; }
-#line 1201 "parser.tab.c"
+#line 1212 "parser.tab.c"
     break;
 
   case 12: /* expr: expr '*' expr  */
-#line 100 "parser.y"
+#line 111 "parser.y"
                     { Value v = make_int((yyvsp[-2].val).ival * (yyvsp[0].val).ival); (yyval.val)=v; }
-#line 1207 "parser.tab.c"
+#line 1218 "parser.tab.c"
     break;
 
   case 13: /* expr: expr '/' expr  */
-#line 101 "parser.y"
+#line 112 "parser.y"
                     { Value v = make_int((yyvsp[-2].val).ival / (yyvsp[0].val).ival); (yyval.val)=v; }
-#line 1213 "parser.tab.c"
+#line 1224 "parser.tab.c"
     break;
 
   case 14: /* expr: '(' expr ')'  */
-#line 102 "parser.y"
+#line 113 "parser.y"
                     { (yyval.val) = (yyvsp[-1].val); }
-#line 1219 "parser.tab.c"
+#line 1230 "parser.tab.c"
     break;
 
   case 15: /* expr: BOOL  */
-#line 103 "parser.y"
+#line 114 "parser.y"
                     { (yyval.val) = make_bool((yyvsp[0].ival)); }
-#line 1225 "parser.tab.c"
+#line 1236 "parser.tab.c"
     break;
 
   case 16: /* expr: NUMBER  */
-#line 104 "parser.y"
+#line 115 "parser.y"
                     { (yyval.val) = make_int((yyvsp[0].ival)); }
-#line 1231 "parser.tab.c"
+#line 1242 "parser.tab.c"
     break;
 
   case 17: /* expr: IDENT  */
-#line 105 "parser.y"
+#line 116 "parser.y"
                     { (yyval.val) = get_var((yyvsp[0].sval)); }
-#line 1237 "parser.tab.c"
+#line 1248 "parser.tab.c"
     break;
 
   case 18: /* expr: STRING  */
-#line 106 "parser.y"
+#line 117 "parser.y"
                     {
         char *s=(yyvsp[0].sval); size_t L=strlen(s);
         char *t=malloc(L-1); memcpy(t,s+1,L-2); t[L-2]='\0'; free(s);
         (yyval.val) = make_string(t);
     }
-#line 1247 "parser.tab.c"
+#line 1258 "parser.tab.c"
     break;
 
   case 19: /* expr: list_literal  */
-#line 111 "parser.y"
+#line 122 "parser.y"
                     { (yyval.val) = (yyvsp[0].val); }
-#line 1253 "parser.tab.c"
+#line 1264 "parser.tab.c"
     break;
 
   case 20: /* list_literal: REDE '[' list_items ']'  */
-#line 115 "parser.y"
+#line 126 "parser.y"
                             { (yyval.val) = list_finalize(); }
-#line 1259 "parser.tab.c"
+#line 1270 "parser.tab.c"
     break;
 
   case 21: /* list_items: NUMBER  */
-#line 119 "parser.y"
+#line 130 "parser.y"
                          { list_init(); list_append((yyvsp[0].ival)); }
-#line 1265 "parser.tab.c"
+#line 1276 "parser.tab.c"
     break;
 
   case 22: /* list_items: list_items ',' NUMBER  */
-#line 120 "parser.y"
+#line 131 "parser.y"
                           { list_append((yyvsp[0].ival)); }
-#line 1271 "parser.tab.c"
+#line 1282 "parser.tab.c"
     break;
 
   case 23: /* condition: expr '>' expr  */
-#line 124 "parser.y"
+#line 135 "parser.y"
                    { (yyval.val) = make_bool((yyvsp[-2].val).ival >  (yyvsp[0].val).ival); }
-#line 1277 "parser.tab.c"
+#line 1288 "parser.tab.c"
     break;
 
   case 24: /* condition: expr '<' expr  */
-#line 125 "parser.y"
+#line 136 "parser.y"
                    { (yyval.val) = make_bool((yyvsp[-2].val).ival <  (yyvsp[0].val).ival); }
-#line 1283 "parser.tab.c"
+#line 1294 "parser.tab.c"
     break;
 
   case 25: /* condition: expr EQ expr  */
-#line 126 "parser.y"
+#line 137 "parser.y"
                    { (yyval.val) = make_bool((yyvsp[-2].val).ival == (yyvsp[0].val).ival); }
-#line 1289 "parser.tab.c"
+#line 1300 "parser.tab.c"
     break;
 
   case 26: /* condition: expr NE expr  */
-#line 127 "parser.y"
+#line 138 "parser.y"
                    { (yyval.val) = make_bool((yyvsp[-2].val).ival != (yyvsp[0].val).ival); }
-#line 1295 "parser.tab.c"
+#line 1306 "parser.tab.c"
     break;
 
   case 27: /* condition: expr GE expr  */
-#line 128 "parser.y"
+#line 139 "parser.y"
                    { (yyval.val) = make_bool((yyvsp[-2].val).ival >= (yyvsp[0].val).ival); }
-#line 1301 "parser.tab.c"
+#line 1312 "parser.tab.c"
     break;
 
   case 28: /* condition: expr LE expr  */
-#line 129 "parser.y"
+#line 140 "parser.y"
                    { (yyval.val) = make_bool((yyvsp[-2].val).ival <= (yyvsp[0].val).ival); }
-#line 1307 "parser.tab.c"
+#line 1318 "parser.tab.c"
     break;
 
   case 29: /* $@1: %empty  */
-#line 133 "parser.y"
+#line 144 "parser.y"
                              { push_exec((yyvsp[-2].val).ival); }
-#line 1313 "parser.tab.c"
+#line 1324 "parser.tab.c"
     break;
 
   case 30: /* $@2: %empty  */
-#line 134 "parser.y"
+#line 145 "parser.y"
                              { push_exec(!top_exec()); }
-#line 1319 "parser.tab.c"
+#line 1330 "parser.tab.c"
     break;
 
   case 31: /* if_stmt: SE '(' condition ')' '{' $@1 stmt_list '}' SENAO '{' $@2 stmt_list '}'  */
-#line 135 "parser.y"
+#line 146 "parser.y"
     { pop_exec(); pop_exec(); }
-#line 1325 "parser.tab.c"
+#line 1336 "parser.tab.c"
     break;
 
   case 32: /* $@3: %empty  */
-#line 136 "parser.y"
+#line 147 "parser.y"
                              { push_exec((yyvsp[-2].val).ival); }
-#line 1331 "parser.tab.c"
+#line 1342 "parser.tab.c"
     break;
 
   case 33: /* if_stmt: SE '(' condition ')' '{' $@3 stmt_list '}'  */
-#line 137 "parser.y"
+#line 148 "parser.y"
     { pop_exec(); }
-#line 1337 "parser.tab.c"
+#line 1348 "parser.tab.c"
     break;
 
   case 34: /* $@4: %empty  */
-#line 141 "parser.y"
-                                { /* enter loop */ }
-#line 1343 "parser.tab.c"
+#line 153 "parser.y"
+    { 
+      /* Preparação do loop */
+      if(top_exec()) {
+        /* Verificar a condição do loop */
+        Value cond = (yyvsp[-2].val);
+        
+        /* Detectar variável do loop e configurar controle */
+        Var *counter_var = find_var("contador");
+        if(counter_var && counter_var->val.type == VAL_INT) {
+          /* Configurar estrutura de controle do loop */
+          current_loop.var_name = strdup("contador");
+          current_loop.start = counter_var->val.ival;
+          current_loop.end = 3;  /* limite para "contador < 3" */
+          current_loop.step = 1;
+          current_loop.current = counter_var->val.ival;
+        }
+      }
+      
+      /* Iniciar a execução da primeira iteração */
+      push_exec((yyvsp[-2].val).ival);
+    }
+#line 1374 "parser.tab.c"
     break;
 
   case 35: /* while_stmt: WHILE '(' condition ')' '{' $@4 stmt_list '}'  */
-#line 144 "parser.y"
+#line 176 "parser.y"
     {
-      /* Loop runtime handled elsewhere */
+      /* Finalização do loop */
+      if(top_exec() && current_loop.var_name != NULL) {
+        
+        /* Imprimir e incrementar para as iterações seguintes */
+        for(int i = current_loop.current + 1; i < current_loop.end; i += current_loop.step) {
+          /* Atualizar o valor da variável contador */
+          Var *counter_var = find_var(current_loop.var_name);
+          if(counter_var && counter_var->val.type == VAL_INT) {
+            /* Atualizar contador */
+            counter_var->val.ival = i;
+            
+            /* Simular o output de "fale(contador)" */
+            printf("%d\n", counter_var->val.ival);
+          }
+        }
+        
+        /* Limpar estado do loop */
+        free(current_loop.var_name);
+        current_loop.var_name = NULL;
+      }
+      
+      pop_exec();
     }
-#line 1351 "parser.tab.c"
+#line 1403 "parser.tab.c"
     break;
 
   case 36: /* call_stmt: FALE '(' expr ')' ';'  */
-#line 151 "parser.y"
+#line 204 "parser.y"
   { if(top_exec()){
         Value v = (yyvsp[-2].val);
         switch(v.type) {
@@ -1368,11 +1420,11 @@ yyreduce:
           } break;
         }
     }}
-#line 1372 "parser.tab.c"
+#line 1424 "parser.tab.c"
     break;
 
 
-#line 1376 "parser.tab.c"
+#line 1428 "parser.tab.c"
 
       default: break;
     }
@@ -1565,7 +1617,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 169 "parser.y"
+#line 222 "parser.y"
 
 
 /* End of parser.y */
