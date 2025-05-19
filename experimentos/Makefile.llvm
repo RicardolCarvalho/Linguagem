@@ -1,0 +1,87 @@
+# Makefile com suporte para LLVM
+
+CC      = gcc
+CFLAGS  = -Wall -g
+LDFLAGS = -lfl
+LEX     = flex
+YACC    = bison
+YFLAGS  = -d
+
+# Verificar se LLVM está disponível no sistema
+LLVM_CONFIG = llvm-config
+LLVM_AVAILABLE = $(shell which $(LLVM_CONFIG) 2>/dev/null)
+
+ifeq ($(LLVM_AVAILABLE),)
+# LLVM não disponível, definir flags padrão
+LLVM_CFLAGS =
+LLVM_LDFLAGS =
+$(warning LLVM não encontrado, compilando sem suporte a LLVM)
+else
+# LLVM disponível, obter flags de compilação e linker
+LLVM_CFLAGS = $(shell $(LLVM_CONFIG) --cflags)
+LLVM_LDFLAGS = $(shell $(LLVM_CONFIG) --ldflags --libs core executionengine mcjit interpreter analysis native bitwriter)
+endif
+
+TARGET  = peixe
+TARGET_LLVM = peixe_llvm
+
+# Arquivos padrão
+OBJS    = lex.yy.o parser.tab.o main.o
+
+# Arquivos com suporte LLVM
+OBJS_LLVM = lex.yy.o parser.tab.llvm.o main.llvm.o llvm_codegen.o
+
+all: $(TARGET)
+
+# Regra para compilar com LLVM se disponível
+ifneq ($(LLVM_AVAILABLE),)
+all: $(TARGET_LLVM)
+endif
+
+# Versão padrão do parser
+parser.tab.c parser.tab.h: parser.y
+	$(YACC) $(YFLAGS) parser.y
+
+# Versão LLVM do parser
+parser.tab.llvm.c parser.tab.llvm.h: parser.y.llvm
+	$(YACC) $(YFLAGS) -o parser.tab.llvm.c parser.y.llvm
+
+lex.yy.c: lexer.l
+	$(LEX) lexer.l
+
+# Arquivo principal padrão
+main.o: main.c
+	$(CC) $(CFLAGS) -c main.c
+
+# Arquivo principal com suporte LLVM
+main.llvm.o: main.c.llvm
+	$(CC) $(CFLAGS) $(LLVM_CFLAGS) -c main.c.llvm -o main.llvm.o
+
+# Parsers
+parser.tab.o: parser.tab.c
+	$(CC) $(CFLAGS) -c parser.tab.c
+
+parser.tab.llvm.o: parser.tab.llvm.c
+	$(CC) $(CFLAGS) $(LLVM_CFLAGS) -c parser.tab.llvm.c -o parser.tab.llvm.o
+
+# Lexer
+lex.yy.o: lex.yy.c
+	$(CC) $(CFLAGS) -c lex.yy.c
+
+# Código de geração LLVM
+llvm_codegen.o: llvm_codegen.c llvm_codegen.h
+	$(CC) $(CFLAGS) $(LLVM_CFLAGS) -c llvm_codegen.c
+
+# Compilação do executável padrão
+$(TARGET): $(OBJS)
+	$(CC) $(CFLAGS) -o $(TARGET) $(OBJS) $(LDFLAGS)
+
+# Compilação do executável com suporte LLVM
+$(TARGET_LLVM): $(OBJS_LLVM)
+	$(CC) $(CFLAGS) -o $(TARGET_LLVM) $(OBJS_LLVM) $(LDFLAGS) $(LLVM_LDFLAGS)
+
+# Limpeza
+clean:
+	rm -f $(TARGET) $(TARGET_LLVM) *.o lex.yy.c parser.tab.c parser.tab.h parser.tab.llvm.c parser.tab.llvm.h output.ll *.bc
+
+.PHONY: all clean

@@ -1,0 +1,3 @@
+// programa de teste simples para a VM
+contador = 10;
+fale(contador);

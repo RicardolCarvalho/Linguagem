@@ -35,8 +35,8 @@
    especially those whose name start with YY_ or yy_.  They are
    private implementation details that can be changed or removed.  */
 
-#ifndef YY_YY_PARSER_TAB_H_INCLUDED
-# define YY_YY_PARSER_TAB_H_INCLUDED
+#ifndef YY_YY_PARSER_TAB_LLVM_H_INCLUDED
+# define YY_YY_PARSER_TAB_LLVM_H_INCLUDED
 /* Debug traces.  */
 #ifndef YYDEBUG
 # define YYDEBUG 0
@@ -45,7 +45,7 @@
 extern int yydebug;
 #endif
 /* "%code requires" blocks.  */
-#line 3 "parser.y"
+#line 3 "parser.y.llvm"
 
     typedef enum { VAL_INT, VAL_BOOL, VAL_LIST, VAL_STRING } ValueType;
     typedef struct {
@@ -57,7 +57,7 @@ extern int yydebug;
         };
     } Value;
 
-#line 61 "parser.tab.h"
+#line 61 "parser.tab.llvm.h"
 
 /* Token kinds.  */
 #ifndef YYTOKENTYPE
@@ -89,10 +89,10 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 69 "parser.y"
+#line 73 "parser.y.llvm"
  Value val; int ival; char *sval; 
 
-#line 96 "parser.tab.h"
+#line 96 "parser.tab.llvm.h"
 
 };
 typedef union YYSTYPE YYSTYPE;
@@ -107,4 +107,4 @@ extern YYSTYPE yylval;
 int yyparse (void);
 
 
-#endif /* !YY_YY_PARSER_TAB_H_INCLUDED  */
+#endif /* !YY_YY_PARSER_TAB_LLVM_H_INCLUDED  */

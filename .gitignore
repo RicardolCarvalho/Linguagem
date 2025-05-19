@@ -6,6 +6,21 @@ __pycache__/
 # C extensions
 *.so
 
+# Arquivos temporários gerados pelo Flex e Bison
+lex.yy.c
+parser.tab.c
+parser.tab.h
+*.output
+
+# Arquivos de objeto e executáveis
+*.o
+*.out
+parser
+main
+
+# Arquivos de bytecode gerados
+*.bytecode.json
+
 # Distribution / packaging
 .Python
 build/

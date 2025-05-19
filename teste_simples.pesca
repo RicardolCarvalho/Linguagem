@@ -1,0 +1,23 @@
+// teste_simples.pesca
+// Um programa de teste simples para depurar a VM
+
+// variáveis básicas
+contador = 5;
+sinal = salmao;
+
+// condicional simples
+se (contador > 3) {
+    fale("Contador maior que 3");
+} senão {
+    fale("Contador menor ou igual a 3");
+}
+
+// loop simples
+enquanto (contador > 0) {
+    fale(contador);
+    contador = contador - 1;
+}
+
+// lista simples
+nomes = rede[1, 2, 3];
+fale(nomes);

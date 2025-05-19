@@ -1,4 +1,4 @@
-/* parser.y */
+/* parser.y com suporte a geração de código LLVM */
 
 %code requires {
     typedef enum { VAL_INT, VAL_BOOL, VAL_LIST, VAL_STRING } ValueType;
@@ -17,19 +17,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "parser.tab.h"
-
-#ifdef ENABLE_LLVM
-/* LLVM Code Generation Support */
-#include "llvm_codegen.h"
-
-/* LLVM Code Generation Flag - default is disabled */
-static int llvm_codegen_enabled = 0;
-
-/* Function to enable/disable LLVM code generation */
-void enable_llvm_codegen(int enable) {
-    llvm_codegen_enabled = enable;
-}
-#endif
+#include "llvm_codegen.h"  /* Adicionado para geração de código LLVM */
 
 /* Execution control stack */
 #define MAX_STACK 100
@@ -74,6 +62,9 @@ static void list_init(){ list_cap=4; list_size=0; list_buf=malloc(list_cap*sizeo
 static void list_append(int x){ if(list_size>=list_cap){ list_cap*=2; list_buf=realloc(list_buf,list_cap*sizeof(int)); } list_buf[list_size++]=x; }
 static Value list_finalize(){ int *a=malloc(list_size*sizeof(int)); memcpy(a,list_buf,list_size*sizeof(int)); free(list_buf); return make_list(a,list_size); }
 
+/* LLVM Code Generation Flag */
+static int llvm_codegen_enabled = 1;  /* Flag para habilitar/desabilitar geração LLVM */
+
 int yylex(void);
 int yyerror(const char *s){ fprintf(stderr,"Erro de sintaxe: %s\n",s); return 0; }
 %}
@@ -98,8 +89,7 @@ int yyerror(const char *s){ fprintf(stderr,"Erro de sintaxe: %s\n",s); return 0;
 %%
 
 program:
-    { 
-      /* Inicializar o módulo LLVM no início do programa */
+    { /* Inicializar o módulo LLVM no início do programa */
       if (llvm_codegen_enabled) {
         init_llvm_module("peixe_module");
       }
@@ -134,8 +124,7 @@ assignment:
       /* Geração de código LLVM para atribuição */
       if (llvm_codegen_enabled) {
         /* Verificar se é uma declaração ou atribuição */
-        Var *var = find_var($1);
-        int is_declaration = (var == NULL);
+        int is_declaration = (find_var($1) == NULL);
         gen_assignment($1, is_declaration);
       }
     }

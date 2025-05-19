@@ -1,0 +1,52 @@
+// teste_avancado.pesca
+// Demonstra os principais recursos da linguagem Peixe
+
+// Variáveis e tipos de dados
+nome = "Linguagem Peixe";
+versao = 1.0;
+ativo = salmao;  // booleano verdadeiro
+numeros = rede[1, 2, 3, 4, 5];
+
+// Cabeçalho do programa
+fale("=== Programa de Demonstração ===");
+fale("Nome: ", nome);
+fale("Versão: ", versao);
+fale("");
+
+// Operações aritméticas
+a = 10;
+b = 5;
+soma = a + b;
+subtracao = a - b;
+multiplicacao = a * b;
+divisao = a / b;
+
+fale("Operações Aritméticas:");
+fale("  Soma: ", soma);
+fale("  Subtração: ", subtracao);
+fale("  Multiplicação: ", multiplicacao);
+fale("  Divisão: ", divisao);
+fale("");
+
+// Estruturas condicionais
+valor = 42;
+fale("Estruturas Condicionais:");
+
+se (valor > 50) {
+    fale("  O valor é maior que 50");
+} senão {
+    fale("  O valor é menor ou igual a 50");
+}
+fale("");
+
+// Loops e contagem
+fale("Demonstração de Loop:");
+contador = 3;
+enquanto (contador > 0) {
+    fale("  Contagem: ", contador);
+    contador = contador - 1;
+}
+fale("  Fim!");
+fale("");
+
+fale("=== Fim da Demonstração ===");
