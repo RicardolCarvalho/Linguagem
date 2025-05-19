@@ -44,6 +44,20 @@
 #if YYDEBUG
 extern int yydebug;
 #endif
+/* "%code requires" blocks.  */
+#line 3 "parser.y"
+
+    typedef enum { VAL_INT, VAL_BOOL, VAL_LIST, VAL_STRING } ValueType;
+    typedef struct {
+        ValueType type;
+        union {
+            int    ival;
+            char  *sval;
+            struct { int *items; int length; } list;
+        };
+    } Value;
+
+#line 61 "parser.tab.h"
 
 /* Token kinds.  */
 #ifndef YYTOKENTYPE
@@ -54,35 +68,19 @@ extern int yydebug;
     YYEOF = 0,                     /* "end of file"  */
     YYerror = 256,                 /* error  */
     YYUNDEF = 257,                 /* "invalid token"  */
-    TNUMBER = 258,                 /* TNUMBER  */
-    TIDENTIFIER = 259,             /* TIDENTIFIER  */
-    TSTRING = 260,                 /* TSTRING  */
-    TBOOL = 261,                   /* TBOOL  */
-    TFALE = 262,                   /* TFALE  */
-    TSE = 263,                     /* TSE  */
-    TSENAO = 264,                  /* TSENAO  */
-    TENQUANTO = 265,               /* TENQUANTO  */
-    TASSIGN = 266,                 /* TASSIGN  */
-    TCONCAT = 267,                 /* TCONCAT  */
-    TPLUS = 268,                   /* TPLUS  */
-    TMINUS = 269,                  /* TMINUS  */
-    TMULT = 270,                   /* TMULT  */
-    TDIV = 271,                    /* TDIV  */
-    TEQ = 272,                     /* TEQ  */
-    TNEQ = 273,                    /* TNEQ  */
-    TGT = 274,                     /* TGT  */
-    TLT = 275,                     /* TLT  */
-    TGTE = 276,                    /* TGTE  */
-    TLTE = 277,                    /* TLTE  */
-    TLPAREN = 278,                 /* TLPAREN  */
-    TRPAREN = 279,                 /* TRPAREN  */
-    TLBRACE = 280,                 /* TLBRACE  */
-    TRBRACE = 281,                 /* TRBRACE  */
-    TCOMMA = 282,                  /* TCOMMA  */
-    TSEMICOLON = 283,              /* TSEMICOLON  */
-    TLBRACKET = 284,               /* TLBRACKET  */
-    TRBRACKET = 285,               /* TRBRACKET  */
-    TREDE = 286                    /* TREDE  */
+    NUMBER = 258,                  /* NUMBER  */
+    BOOL = 259,                    /* BOOL  */
+    IDENT = 260,                   /* IDENT  */
+    STRING = 261,                  /* STRING  */
+    SE = 262,                      /* SE  */
+    SENAO = 263,                   /* SENAO  */
+    FALE = 264,                    /* FALE  */
+    REDE = 265,                    /* REDE  */
+    WHILE = 266,                   /* WHILE  */
+    EQ = 267,                      /* EQ  */
+    GE = 268,                      /* GE  */
+    LE = 269,                      /* LE  */
+    NE = 270                       /* NE  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -91,14 +89,10 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 12 "parser.y"
+#line 58 "parser.y"
+ Value val; int ival; char *sval; 
 
-    int ival;
-    int boolean;
-    char* str;
-    void* list;  /* Para suportar o tipo 'rede' (lista) */
-
-#line 102 "parser.tab.h"
+#line 96 "parser.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

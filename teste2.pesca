@@ -1,0 +1,23 @@
+// Teste de todas as construções
+
+// atributos iniciais
+peixe = 10;
+agua_limpa = salmao;       // true
+minha_lista = rede[1, 2];  
+
+// should print “Peguei um grande!” porque 10 > 5
+se (peixe > 5) {
+    fale("Peguei um grande!");
+} senão {
+    fale("Muito pequeno!");
+}
+
+// agora um contador com while
+contador = 0;
+enquanto (contador < 3) {
+    fale(contador);
+    contador = contador + 1;
+}
+
+// teste de lista
+fale(minha_lista);

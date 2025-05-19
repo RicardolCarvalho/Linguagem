@@ -1,0 +1,9 @@
+peixe = 10;
+agua_limpa = salmao;
+minha_lista = rede[1, 2, 3];
+
+se (peixe > 5) {
+    fale("Peguei um grande!");
+} senão {
+    fale("Muito pequeno!");
+}

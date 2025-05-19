@@ -1,29 +1,35 @@
-# Compilador
-CC = gcc
-CFLAGS = -Wall -g
+# Makefile
 
-# Arquivos fonte
-LEX = lexer.l
-YACC = parser.y
+CC      = gcc
+CFLAGS  = -Wall -g
+LEX     = flex
+YACC    = bison
+YFLAGS  = -d
 
-# Arquivos gerados
-LEX_C = lex.yy.c
-YACC_C = parser.tab.c
-YACC_H = parser.tab.h
+TARGET  = peixe
+OBJS    = lex.yy.o parser.tab.o main.o
 
-# Executável final
-EXEC = meu_compilador
+all: $(TARGET)
 
-all: $(EXEC)
+parser.tab.c parser.tab.h: parser.y
+	$(YACC) $(YFLAGS) parser.y
 
-$(EXEC): $(LEX_C) $(YACC_C) main.c
-	gcc -Wall -g -o $(EXEC) $(YACC_C) $(LEX_C) main.c
+lex.yy.c: lexer.l parser.tab.h
+	$(LEX) lexer.l
 
-$(LEX_C): $(LEX) $(YACC_H)
-	flex $(LEX)
+main.o: main.c
+	$(CC) $(CFLAGS) -c main.c
 
-$(YACC_C) $(YACC_H): $(YACC)
-	bison -d -o parser.tab.c parser.y
+parser.tab.o: parser.tab.c
+	$(CC) $(CFLAGS) -c parser.tab.c
+
+lex.yy.o: lex.yy.c
+	$(CC) $(CFLAGS) -c lex.yy.c
+
+$(TARGET): $(OBJS)
+	$(CC) $(CFLAGS) -o $(TARGET) $(OBJS) -lfl
 
 clean:
-	rm -f $(LEX_C) $(YACC_C) $(YACC_H) $(EXEC)
+	rm -f $(TARGET) *.o lex.yy.c parser.tab.c parser.tab.h
+
+.PHONY: all clean
