@@ -18,7 +18,6 @@
 #include <string.h>
 #include "parser.tab.h"
 
-#ifdef ENABLE_LLVM
 /* LLVM Code Generation Support */
 #include "llvm_codegen.h"
 
@@ -29,7 +28,6 @@ static int llvm_codegen_enabled = 0;
 void enable_llvm_codegen(int enable) {
     llvm_codegen_enabled = enable;
 }
-#endif
 
 /* Execution control stack */
 #define MAX_STACK 100

@@ -1,13 +1,13 @@
 # Makefile
 
 CC      = gcc
-CFLAGS  = -Wall -g
+CFLAGS  = -Wall -g -DENABLE_LLVM=0
 LEX     = flex
 YACC    = bison
-YFLAGS  = -d
+YFLAGS  = -d --defines=parser.tab.h
 
 TARGET  = peixe
-OBJS    = lex.yy.o parser.tab.o main.o
+OBJS    = lex.yy.o parser.tab.o main.o llvm_codegen.o
 
 all: $(TARGET)
 
@@ -25,6 +25,9 @@ parser.tab.o: parser.tab.c
 
 lex.yy.o: lex.yy.c
 	$(CC) $(CFLAGS) -c lex.yy.c
+
+llvm_codegen.o: llvm_codegen.c llvm_codegen.h
+	$(CC) $(CFLAGS) -c llvm_codegen.c
 
 $(TARGET): $(OBJS)
 	$(CC) $(CFLAGS) -o $(TARGET) $(OBJS) -lfl
